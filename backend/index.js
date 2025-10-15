@@ -1,26 +1,25 @@
-const express = require('express')
-const { v4: uuidv4 } = require('uuid');
-const { CORS_ORIGIN } = require('./config')
-console.log(require('./config'))
-console.log(CORS_ORIGIN)
+// index.js
+const express = require('express');
+const cors = require('cors');
+const { v4: uuidv4 } = require('uuid'); // to generate GUID
 
-const ID = uuidv4()
-const PORT = 8080
+const app = express();
 
-const app = express()
-app.use(express.json())
+// Allow requests from frontend at localhost:3000
+app.use(cors({ origin: 'http://localhost:3000' }));
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', CORS_ORIGIN)
-    res.setHeader('Access-Control-Allow-Methods', 'GET')
-    res.setHeader('Access-Control-Allow-Headers', '*')
-    next();
-})
-app.get(/.*/, (req, res) => {
-    console.log(`${new Date().toISOString()} GET`)
-    res.json({id: ID})
-})
+// Optional: parse JSON requests
+app.use(express.json());
 
+// Success endpoint
+app.get('/success', (req, res) => {
+  const guid = uuidv4();
+  res.json({ message: `SUCCESS + ${guid}` });
+});
+
+// Start server
+const PORT = 8080;
 app.listen(PORT, () => {
-    console.log(`Backend started on ${PORT}. ctrl+c to exit`)
-})
+  console.log(`Backend started on port ${PORT}`);
+});
+
