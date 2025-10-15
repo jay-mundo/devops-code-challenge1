@@ -1,29 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import './App.css';
-import API_URL from './config'
+import { useEffect, useState } from "react";
+import config from "./config";
 
 function App() {
-  const [successMessage, setSuccessMessage] = useState() 
-  const [failureMessage, setFailureMessage] = useState() 
+  const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    const getId = async () => {
-      try {
-        const resp = await fetch(API_URL)
-        setSuccessMessage((await resp.json()).id)
-      }
-      catch(e) {
-        setFailureMessage(e.message)
-      }
-    }
-    getId()
-  })
+    fetch(`${config.backendUrl}/success`)
+      .then((res) => res.json())
+      .then((data) => setMessage(data.message))
+      .catch((err) => {
+        console.error(err);
+        setMessage("Failed to fetch from backend");
+      });
+  }, []);
 
   return (
-    <div className="App">
-      {!failureMessage && !successMessage ? 'Fetching...' : null}
-      {failureMessage ? failureMessage : null}
-      {successMessage ? successMessage : null}
+    <div>
+      <h1>Frontend Fetch Example</h1>
+      <p>{message}</p>
     </div>
   );
 }
