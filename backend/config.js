@@ -1,3 +1,3 @@
-module.exports = {
-    CORS_ORIGIN: 'http://localhost:3000'
-}
+const cors = require('cors');
+app.use(cors({ origin: 'http://localhost:3000' }));
+
