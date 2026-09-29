@@ -1,0 +1,168 @@
+{
+  "version": 4,
+  "terraform_version": "1.15.8",
+  "serial": 36,
+  "lineage": "d11f605a-403c-a2e4-ca2c-432bd2698e4e",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_ecr_lifecycle_policy",
+      "name": "backend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "tech-challenge-backend",
+            "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"Keep last 5 images\",\"rulePriority\":1,\"selection\":{\"countNumber\":5,\"countType\":\"imageCountMoreThan\",\"tagPrefixList\":[\"v\"],\"tagStatus\":\"tagged\"}}]}",
+            "region": "us-east-2",
+            "registry_id": "944945738481",
+            "repository": "tech-challenge-backend"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "944945738481",
+            "region": "us-east-2",
+            "repository": "tech-challenge-backend"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_ecr_repository.backend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_ecr_lifecycle_policy",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "tech-challenge-frontend",
+            "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"Keep last 5 images\",\"rulePriority\":1,\"selection\":{\"countNumber\":5,\"countType\":\"imageCountMoreThan\",\"tagPrefixList\":[\"v\"],\"tagStatus\":\"tagged\"}}]}",
+            "region": "us-east-2",
+            "registry_id": "944945738481",
+            "repository": "tech-challenge-frontend"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "944945738481",
+            "region": "us-east-2",
+            "repository": "tech-challenge-frontend"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_ecr_repository.frontend"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_ecr_repository",
+      "name": "backend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:us-east-2:944945738481:repository/tech-challenge-backend",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "tech-challenge-backend",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "image_tag_mutability_exclusion_filter": [],
+            "name": "tech-challenge-backend",
+            "region": "us-east-2",
+            "registry_id": "944945738481",
+            "repository_url": "944945738481.dkr.ecr.us-east-2.amazonaws.com/tech-challenge-backend",
+            "tags": {
+              "Environment": "dev",
+              "Name": "tech-challenge-backend-repo"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "tech-challenge-backend-repo"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "944945738481",
+            "name": "tech-challenge-backend",
+            "region": "us-east-2"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_ecr_repository",
+      "name": "frontend",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:us-east-2:944945738481:repository/tech-challenge-frontend",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "tech-challenge-frontend",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "image_tag_mutability_exclusion_filter": [],
+            "name": "tech-challenge-frontend",
+            "region": "us-east-2",
+            "registry_id": "944945738481",
+            "repository_url": "944945738481.dkr.ecr.us-east-2.amazonaws.com/tech-challenge-frontend",
+            "tags": {
+              "Environment": "dev",
+              "Name": "tech-challenge-frontend-repo"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "Name": "tech-challenge-frontend-repo"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "944945738481",
+            "name": "tech-challenge-frontend",
+            "region": "us-east-2"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

@@ -1,7 +1,9 @@
-# ecr.tf
+# ============================================================
+# ECR REPOSITORIES
+# ============================================================
 
 resource "aws_ecr_repository" "frontend" {
-  name                 = "${var.project_name}-frontend"
+  name                 = var.ecr_frontend_repo_name
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -15,7 +17,7 @@ resource "aws_ecr_repository" "frontend" {
 }
 
 resource "aws_ecr_repository" "backend" {
-  name                 = "${var.project_name}-backend"
+  name                 = var.ecr_backend_repo_name
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -28,6 +30,11 @@ resource "aws_ecr_repository" "backend" {
   }
 }
 
+
+# ============================================================
+# ECR LIFECYCLE POLICY - FRONTEND
+# ============================================================
+
 resource "aws_ecr_lifecycle_policy" "frontend" {
   repository = aws_ecr_repository.frontend.name
 
@@ -35,13 +42,15 @@ resource "aws_ecr_lifecycle_policy" "frontend" {
     rules = [
       {
         rulePriority = 1
-        description  = "Keep last 5 images"
+        description  = "Keep last 5 tagged images"
+
         selection = {
           tagStatus     = "tagged"
           tagPrefixList = ["v"]
           countType     = "imageCountMoreThan"
           countNumber   = 5
         }
+
         action = {
           type = "expire"
         }
@@ -50,6 +59,11 @@ resource "aws_ecr_lifecycle_policy" "frontend" {
   })
 }
 
+
+# ============================================================
+# ECR LIFECYCLE POLICY - BACKEND
+# ============================================================
+
 resource "aws_ecr_lifecycle_policy" "backend" {
   repository = aws_ecr_repository.backend.name
 
@@ -57,13 +71,15 @@ resource "aws_ecr_lifecycle_policy" "backend" {
     rules = [
       {
         rulePriority = 1
-        description  = "Keep last 5 images"
+        description  = "Keep last 5 tagged images"
+
         selection = {
           tagStatus     = "tagged"
           tagPrefixList = ["v"]
           countType     = "imageCountMoreThan"
           countNumber   = 5
         }
+
         action = {
           type = "expire"
         }

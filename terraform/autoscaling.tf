@@ -3,7 +3,7 @@
 # Frontend ECS Auto-Scaling
 resource "aws_appautoscaling_target" "frontend" {
   max_capacity       = 4
-  min_capacity       = 2
+  min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.frontend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -17,7 +17,7 @@ resource "aws_appautoscaling_policy" "frontend_cpu" {
   service_namespace  = aws_appautoscaling_target.frontend.service_namespace
 
   target_tracking_scaling_policy_configuration {
-    target_value       = 50.0
+    target_value = 50.0
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
@@ -29,7 +29,7 @@ resource "aws_appautoscaling_policy" "frontend_cpu" {
 # Backend ECS Auto-Scaling
 resource "aws_appautoscaling_target" "backend" {
   max_capacity       = 4
-  min_capacity       = 2
+  min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.backend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
@@ -43,7 +43,7 @@ resource "aws_appautoscaling_policy" "backend_cpu" {
   service_namespace  = aws_appautoscaling_target.backend.service_namespace
 
   target_tracking_scaling_policy_configuration {
-    target_value       = 50.0
+    target_value = 50.0
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
