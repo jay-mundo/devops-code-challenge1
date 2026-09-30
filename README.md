@@ -1,4 +1,3 @@
-This is the actual README.md file I have on my terraform:
 # AWS DevOps Challenge
 ## Project Overview
 This project deploys a containerized frontend and backend application to AWS using Terraform, Amazon ECS Fargate, Amazon ECR, an Application Load Balancer, and Jenkins CI/CD.
