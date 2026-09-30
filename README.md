@@ -1,59 +1,257 @@
-# Overview
-This repository contains a React frontend, and an Express backend that the frontend connects to.
-
-# Objective
-Deploy the frontend and backend to somewhere publicly accessible over the internet. The AWS Free Tier should be more than sufficient to run this project, but you may use any platform and tooling you'd like for your solution.
-
-Fork this repo as a base. You may change any code in this repository to suit the infrastructure you build in this code challenge.
-
-# Submission
-1. A github repo that has been forked from this repo with all your code.
-2. Modify this README file with instructions for:
-* Any tools needed to deploy your infrastructure
-* All the steps needed to repeat your deployment process
-* URLs to the your deployed frontend.
-
-# Evaluation
-You will be evaluated on the ease to replicate your infrastructure. This is a combination of quality of the instructions, as well as any scripts to automate the overall setup process.
-
-# Setup your environment
-Install nodejs. Binaries and installers can be found on nodejs.org.
-https://nodejs.org/en/download/
-
-For macOS or Linux, Nodejs can usually be found in your preferred package manager.
-https://nodejs.org/en/download/package-manager/
-
-Depending on the Linux distribution, the Node Package Manager `npm` may need to be installed separately.
-
-# Running the project
-The backend and the frontend will need to run on separate processes. The backend should be started first.
+This is the actual README.md file I have on my terraform:
+# AWS DevOps Challenge
+## Project Overview
+This project deploys a containerized frontend and backend application to AWS using Terraform, Amazon ECS Fargate, Amazon ECR, an Application Load Balancer, and Jenkins CI/CD.
+The application consists of:
+- React frontend running on port 3000
+- Node.js/Express backend running on port 8080
+- Docker containers for both applications
+- Amazon ECR for container image storage
+- Amazon ECS Fargate for containerized workloads
+- Application Load Balancer for public access and traffic routing
+- Terraform for infrastructure as code
+- Jenkins for CI/CD automation
+- ECS Service Auto Scaling based on CPU utilization
+## Architecture
+```text
+                         Internet
+                            |
+                            v
+              Application Load Balancer
+                            |
+                    +-------+-------+
+                    |               |
+                    v               v
+              Frontend ECS      Backend ECS
+              Port 3000         Port 8080
+                    |               |
+                    +-------+-------+
+                            |
+                         AWS VPC
+                 Public / Private Subnets
+                            |
+                       NAT Gateway
 ```
+## Technology Stack
+### Application
+- React
+- Node.js
+- Express
+- JavaScript
+### Containers
+- Docker
+- Amazon ECR
+### AWS
+- Amazon VPC
+- Public and private subnets
+- Internet Gateway
+- NAT Gateway
+- Application Load Balancer
+- Amazon ECS
+- AWS Fargate
+- Amazon CloudWatch
+- ECS Service Auto Scaling
+### Infrastructure as Code
+- Terraform
+### CI/CD
+- Jenkins
+- GitHub
+## Prerequisites
+Install the following tools before deploying the project:
+- Git
+- Node.js and npm
+- Docker
+- AWS CLI
+- Terraform
+- Jenkins
+- AWS account with appropriate IAM permissions
+Verify the tools:
+```bash
+git --version
+node --version
+npm --version
+docker --version
+aws --version
+terraform version
+```
+## Project Structure
+```text
+devops-code-challenge1/
+├── backend/
+│   ├── Dockerfile
+│   ├── index.js
+│   ├── config.js
+│   ├── package.json
+│   └── package-lock.json
+├── frontend/
+│   ├── Dockerfile
+│   ├── src/
+│   ├── package.json
+│   └── package-lock.json
+├── terraform/
+├── Jenkinsfile
+└── README.md
+```
+## Local Application Setup
+### Backend
+```bash
 cd backend
 npm ci
 npm start
 ```
-The backend should response to a GET request on `localhost:8080`.
-
-With the backend started, the frontend can be started.
-```
+The backend runs on:
+http://localhost:8080
+### Frontend
+Open another terminal:
+```bash
 cd frontend
 npm ci
 npm start
 ```
-The frontend can be accessed at `localhost:3000`. If the frontend successfully connects to the backend, a message saying "SUCCESS" followed by a guid should be displayed on the screen.  If the connection failed, an error message will be displayed on the screen.
-
-# Configuration
-The frontend has a configuration file at `frontend/src/config.js` that defines the URL to call the backend. This URL is used on `frontend/src/App.js#12`, where the front end will make the GET call during the initial load of the page.
-
-The backend has a configuration file at `backend/config.js` that defines the host that the frontend will be calling from. This URL is used in the `Access-Control-Allow-Origin` CORS header, read in `backend/index.js#14`
-
-# Optional Extras
-The core requirement for this challenge is to get the provided application up and running for consumption over the public internet. That being said, there are some opportunities in this code challenge to demonstrate your skill sets that are above and beyond the core requirement.
-
-A few examples of extras for this coding challenge:
-1. Dockerizing the application
-2. Scripts to set up the infrastructure
-3. Providing a pipeline for the application deployment
-4. Running the application in a serverless environment
-
-This is not an exhaustive list of extra features that could be added to this code challenge. At the end of the day, this section is for you to demonstrate any skills you want to show that’s not captured in the core requirement.
+The frontend runs on:
+http://localhost:3000
+## Docker Setup
+Build the backend image:
+```bash
+docker build -t backend ./backend
+```
+Build the frontend image:
+```bash
+docker build -t frontend ./frontend
+```
+Run the backend:
+```bash
+docker run -d --name backend -p 8080:8080 backend
+```
+Run the frontend:
+```bash
+docker run -d --name frontend -p 3000:3000 frontend
+```
+The ECS deployment uses Linux AMD64 container images because the ECS Fargate workloads run on x86_64 infrastructure.
+## AWS Infrastructure
+The infrastructure is deployed in:
+AWS Region: us-east-1
+Terraform provisions:
+- VPC
+- Public and private subnets across multiple Availability Zones
+- Internet Gateway
+- NAT Gateway
+- Route tables
+- Security groups
+- Application Load Balancer
+- ECS cluster
+- ECS services
+- ECS task definitions
+- ECR repositories
+- ECS Service Auto Scaling
+## Terraform Deployment
+From the Terraform directory:
+```bash
+cd terraform
+```
+Initialize Terraform:
+```bash
+terraform init
+```
+Review the infrastructure plan:
+```bash
+terraform plan
+```
+Apply the infrastructure:
+```bash
+terraform apply
+```
+Before applying future infrastructure changes, review the plan with:
+```bash
+terraform plan
+```
+## Amazon ECR
+Docker images are stored in Amazon Elastic Container Registry.
+Repositories:
+- devops-frontend
+- devops-backend
+Example ECR authentication:
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 550054567146.dkr.ecr.us-east-1.amazonaws.com
+```
+The Docker images are tagged and pushed to ECR before being deployed to ECS.
+## ECS and Fargate
+The application runs on Amazon ECS using AWS Fargate.
+ECS cluster:
+devops-challenge-cluster
+ECS services:
+- devops-challenge-frontend
+- devops-challenge-backend
+Task configuration:
+- CPU: 0.5 vCPU
+- Memory: 1 GB
+Application ports:
+- Frontend: 3000
+- Backend: 8080
+The Application Load Balancer provides the public entry point and routes traffic to the ECS services.
+## Jenkins CI/CD
+Jenkins automates the application deployment process.
+The Jenkins pipeline:
+1. Checks out the GitHub repository.
+2. Builds the frontend Docker image.
+3. Builds the backend Docker image.
+4. Authenticates with Amazon ECR.
+5. Tags the Docker images.
+6. Pushes the images to ECR.
+7. Forces a new ECS deployment for the frontend service.
+8. Forces a new ECS deployment for the backend service.
+The pipeline is defined in:
+Jenkinsfile
+Jenkins job:
+TC1
+Jenkins URL:
+http://52.205.191.40:8080
+AWS credentials used by Jenkins are stored in Jenkins Credentials Manager and are not hard-coded into the Jenkinsfile.
+## ECS Auto Scaling
+The frontend ECS service uses target tracking based on average CPU utilization.
+Configuration:
+- Minimum tasks: 1
+- Maximum tasks: 4
+- CPU target: 50%
+- Scale-out cooldown: 60 seconds
+- Scale-in cooldown: 60 seconds
+The scaling policy uses:
+ECSServiceAverageCPUUtilization
+This allows ECS to automatically adjust the number of frontend tasks based on CPU utilization.
+## Load Testing
+Siege 4.2.0 was used to test the public application endpoint.
+Test configuration:
+- Concurrent users: 250
+- Duration: 2 minutes
+Results:
+- Transactions: 20,496
+- Availability: 99.97%
+- Failed transactions: 6
+- Response time: 1.46 seconds
+- Transaction rate: 169.94 transactions/sec
+- Concurrency: 248.18
+- Throughput: 2.32 MB/sec
+The load test maintained 99.97% availability while handling approximately 250 concurrent connections.
+## Public Application
+Frontend:
+http://devops-challenge-alb-1765529530.us-east-1.elb.amazonaws.com
+Backend API:
+http://devops-challenge-alb-1765529530.us-east-1.elb.amazonaws.com/api/
+## Cleanup
+When the environment is no longer needed, Terraform can be used to remove infrastructure managed by Terraform:
+```bash
+cd terraform
+terraform destroy
+```
+Review the destruction plan carefully before confirming.
+Resources created outside Terraform, such as Jenkins infrastructure, may need to be removed separately.
+## Submission
+GitHub repository:
+https://github.com/jay-mundo/devops-code-challenge1
+Jenkins:
+http://52.205.191.40:8080
+Frontend:
+http://devops-challenge-alb-1765529530.us-east-1.elb.amazonaws.com
+The repository contains the application source code, Docker configuration, Terraform infrastructure, Jenkins CI/CD pipeline, and deployment documentation.
+## Security Note
+Do not commit AWS access keys, secret keys, GitHub tokens, Jenkins passwords, or other credentials to the repository.
