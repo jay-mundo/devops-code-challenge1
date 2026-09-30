@@ -1,56 +1,76 @@
-name: Deploy to ECS
+name: GitOps Deploy
 
 on:
   push:
     branches:
       - gitops
 
+permissions:
+  contents: read
+  id-token: write
+
 env:
-  AWS_REGION: <region-your-project is located>
-  ECR_FRONTEND: <your-account-id>.dkr.ecr.<region>.amazonaws.com/<your-frontend-repo>
-  ECR_BACKEND: <your-account-id>.dkr.ecr.<region>.amazonaws.com/<your-backend-repo>
-  CLUSTER_NAME: <your-ecs-cluster-name>
-  FRONTEND_SVC: <your-frontend-service-name>
-  BACKEND_SVC: <your-backend-service-name>
+  AWS_REGION: us-east-1
+
+  FRONTEND_REPO: 550054567146.dkr.ecr.us-east-1.amazonaws.com/devops-frontend
+  BACKEND_REPO: 550054567146.dkr.ecr.us-east-1.amazonaws.com/devops-backend
+
+  ECS_CLUSTER: devops-challenge-cluster
+  FRONTEND_SERVICE: devops-challenge-frontend
+  BACKEND_SERVICE: devops-challenge-backend
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Build and Deploy to AWS
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<your-account-id>:role/<your-oidc-role-name>
+          role-to-assume: arn:aws:iam::550054567146:role/Github_branch
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push frontend image
+      - name: Build frontend Docker image
         run: |
-          docker build -t frontend:latest ./frontend
-          docker tag frontend:latest $ECR_FRONTEND:latest
-          docker push $ECR_FRONTEND:latest
+          docker build \
+            --platform linux/amd64 \
+            -t ${{ env.FRONTEND_REPO }}:latest \
+            ./frontend
 
-      - name: Build, tag, and push backend image
+      - name: Build backend Docker image
         run: |
-          docker build -t backend:latest ./backend
-          docker tag backend:latest $ECR_BACKEND:latest
-          docker push $ECR_BACKEND:latest
+          docker build \
+            --platform linux/amd64 \
+            -t ${{ env.BACKEND_REPO }}:latest \
+            ./backend
 
-      - name: Update ECS frontend service
+      - name: Push frontend image to ECR
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $FRONTEND_SVC --force-new-deployment --region $AWS_REGION
+          docker push ${{ env.FRONTEND_REPO }}:latest
 
-      - name: Update ECS backend service
+      - name: Push backend image to ECR
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $BACKEND_SVC --force-new-deployment --region $AWS_REGION
+          docker push ${{ env.BACKEND_REPO }}:latest
+
+      - name: Deploy frontend to ECS
+        run: |
+          aws ecs update-service \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --service "${{ env.FRONTEND_SERVICE }}" \
+            --force-new-deployment \
+            --region "${{ env.AWS_REGION }}"
+
+      - name: Deploy backend to ECS
+        run: |
+          aws ecs update-service \
+            --cluster "${{ env.ECS_CLUSTER }}" \
+            --service "${{ env.BACKEND_SERVICE }}" \
+            --force-new-deployment \
+            --region "${{ env.AWS_REGION }}"
