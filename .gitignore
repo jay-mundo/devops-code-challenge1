@@ -5,3 +5,4 @@ terraform/.terraform.lock.hcl
 *.tfvars
 *.tfplan
 node_modules/
+.DS_Store

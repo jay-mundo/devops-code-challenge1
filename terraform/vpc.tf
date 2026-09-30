@@ -9,6 +9,10 @@ resource "aws_vpc" "main" {
   }
 }
 
+# ---------------------------------------------------------
+# Internet Gateway
+# ---------------------------------------------------------
+
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -17,6 +21,10 @@ resource "aws_internet_gateway" "main" {
     Environment = var.environment
   }
 }
+
+# ---------------------------------------------------------
+# Public Subnets
+# ---------------------------------------------------------
 
 resource "aws_subnet" "public_1" {
   vpc_id                  = aws_vpc.main.id
@@ -42,6 +50,10 @@ resource "aws_subnet" "public_2" {
   }
 }
 
+# ---------------------------------------------------------
+# Private Subnets
+# ---------------------------------------------------------
+
 resource "aws_subnet" "private_1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.11.0/24"
@@ -64,6 +76,10 @@ resource "aws_subnet" "private_2" {
   }
 }
 
+# ---------------------------------------------------------
+# Public Route Table
+# ---------------------------------------------------------
+
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -73,17 +89,41 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${var.project_name}-public-rt"
+    Name        = "${var.project_name}-public-rt"
+    Environment = var.environment
   }
 }
+
+# ---------------------------------------------------------
+# Public Route Table Associations
+# ---------------------------------------------------------
+
+resource "aws_route_table_association" "public_1" {
+  subnet_id      = aws_subnet.public_1.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public_2" {
+  subnet_id      = aws_subnet.public_2.id
+  route_table_id = aws_route_table.public.id
+}
+
+# ---------------------------------------------------------
+# NAT Gateway Elastic IP
+# ---------------------------------------------------------
 
 resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = {
-    Name = "${var.project_name}-nat-eip"
+    Name        = "${var.project_name}-nat-eip"
+    Environment = var.environment
   }
 }
+
+# ---------------------------------------------------------
+# NAT Gateway
+# ---------------------------------------------------------
 
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat.id
@@ -94,9 +134,14 @@ resource "aws_nat_gateway" "main" {
   ]
 
   tags = {
-    Name = "${var.project_name}-nat"
+    Name        = "${var.project_name}-nat"
+    Environment = var.environment
   }
 }
+
+# ---------------------------------------------------------
+# Private Route Table
+# ---------------------------------------------------------
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
@@ -107,6 +152,21 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.project_name}-private-rt"
+    Name        = "${var.project_name}-private-rt"
+    Environment = var.environment
   }
+}
+
+# ---------------------------------------------------------
+# Private Route Table Associations
+# ---------------------------------------------------------
+
+resource "aws_route_table_association" "private_1" {
+  subnet_id      = aws_subnet.private_1.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private_2" {
+  subnet_id      = aws_subnet.private_2.id
+  route_table_id = aws_route_table.private.id
 }
